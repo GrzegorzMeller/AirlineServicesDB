@@ -54,3 +54,13 @@ join clients on tickets.client_id = clients.client_id
 join people on people.passport_no=clients.passport_no
 group by id;
 
+--7. For each passenger calculate how many days passed from date of registration to the day they will have at least two flights in one day
+select people.first_name, people.last_name,people.date_of_registration,
+datediff(day,people.date_of_registration, max(flights_dates.departure_date)) as "Days passed from regiistering till first flight with transfers",
+max(flights_dates.departure_date) as "Departure date",
+count(flights_dates.departure_date) as "No of single flights in that day" from people
+join clients on clients.passport_no = people.passport_no
+join tickets on clients.client_id = tickets.client_id
+join single_flight on tickets.ticket_id=single_flight.ticket_id
+join flights_dates on single_flight.flight_date_id=flights_dates.id
+group by people.first_name, people.last_name,people.date_of_registration;
